@@ -45,17 +45,48 @@ class Vampire {
 
   // Returns the vampire object with that name, or null if no vampire exists with that name
   vampireWithName(name) {
-    
+    // console.log(name);
+
+    if (this.name === name) {
+      return this;
+    } else {
+      for (let vampire of this.offspring) {
+        // console.log('vampire: ',vampire);
+        // console.log('this.offspring: ',this.offspring);
+        if (vampire.vampireWithName(name)) {
+          return vampire.vampireWithName(name);
+        }
+      }
+      return null;
+    }
+
   }
 
   // Returns the total number of vampires that exist
   get totalDescendents() {
-    
+    let totalDescendents = 0;
+    // console.log(this.offspring);
+
+    for (let vampire of this.offspring) {
+      totalDescendents += vampire.totalDescendents + 1;
+    }
+    return totalDescendents;
   }
+
 
   // Returns an array of all the vampires that were converted after 1980
   get allMillennialVampires() {
-    
+    let millenialDescendents = [];
+    // console.log(this.offspring);
+
+    if (this.yearConverted > 1980) {
+      millenialDescendents.push(this);
+    }
+
+    for (let vampire of this.offspring) {
+      millenialDescendents = millenialDescendents.concat(vampire.allMillennialVampires);
+    }
+    return millenialDescendents;
   }
 
   /** Stretch **/
@@ -66,45 +97,46 @@ class Vampire {
   // * when comparing Ansel and Sarah, Ansel is the closest common anscestor.
   // * when comparing Ansel and Andrew, Ansel is the closest common anscestor.
   closestCommonAncestor(vampire) {
-    if (this.creator === vampire) {
+    console.log('this.creator: ',this.creator);
+    console.log('this.name: ',this.name);
+    console.log('vampire.name: ',vampire.name);
+
+    if (this.creator === null) {
+      return this;
+    } else if (vampire.creator === null) {
       return vampire;
-      console.log('1st. case: ',vampire);
+    } else if (this === vampire) {
+      return this;
     } else if (this.creator === vampire.creator) {
       return this.creator;
-      console.log('2nd. case: ',this.creator);
     } else if (this === vampire.creator) {
       return this;
-      console.log('3rd. case: ',this);
-    } else if (this.creator === null) {
+    } else if (this.creator === vampire) {
       return this.creator;
-    } else if (vampire.creator === null) {
-      return vampire.creator;
-    } else if (this.creator.creator === null) {
-      return this.creator.creator;
-    } else if (vampire.creator.creator === null) {
-      return vampire.creator.creator;
-    } else {
+    } else if (this.creator.creator !== null) {
       return this.creator.closestCommonAncestor(vampire);
-      console.log('4th. case: ',this.creator.closestCommonAncestor(vampire));
+    } else if (vampire.creator.creator !== null) {
+      return this.closestCommonAncestor(vampire.creator);
     }
+
   }
 }
 
 module.exports = Vampire;
 
-// let original = new Vampire('Original', 1500);
-// let ansel = new Vampire('Ansel', 1670);
-// let bart = new Vampire('Bart', 1675);
-// let elgort = new Vampire('Elgort', 1784);
-// let sarah = new Vampire('Sarah', 1759);
-// let andrew = new Vampire('Andrew', 1853);
-// original.addOffspring(ansel);
-// original.addOffspring(bart);
-// ansel.addOffspring(elgort);
-// ansel.addOffspring(sarah);
-// elgort.addOffspring(andrew);
+let original = new Vampire('Original', 1500);
+let ansel = new Vampire('Ansel', 1670);
+let bart = new Vampire('Bart', 1675);
+let elgort = new Vampire('Elgort', 1784);
+let sarah = new Vampire('Sarah', 1759);
+let andrew = new Vampire('Andrew', 1853);
+original.addOffspring(ansel);
+original.addOffspring(bart);
+ansel.addOffspring(elgort);
+ansel.addOffspring(sarah);
+elgort.addOffspring(andrew);
 // console.log('original: ',original);
 // console.log('ansel: ',ansel);
 // console.log('bart: ',bart);
 
-// console.log(bart.closestCommonAncestor(sarah));
+console.log('result: ',bart.closestCommonAncestor(original));
